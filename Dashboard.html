@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Scripts Bot - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-online {
+            background: #00ff00;
+        }
+        
+        .status-offline {
+            background: #ff0000;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-box h3 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .stat-box p {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .control-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-btn {
+            background: #00ff00;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        }
+        
+        .toggle-btn.disabled {
+            background: #ff4444;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Galaxy Scripts Bot</h1>
+            <p>Painel de Controle e Monitoramento</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <div class="status-card">
+            <h2>📊 Status do Bot</h2>
+            <p style="margin: 15px 0;">
+                <span class="status-indicator" id="statusDot"></span>
+                <span id="statusText">Carregando...</span>
+            </p>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <h3>PING</h3>
+                    <p id="ping">--ms</p>
+                </div>
+                <div class="stat-box">
+                    <h3>SERVIDORES</h3>
+                    <p id="servers">--</p>
+                </div>
+                <div class="stat-box">
+                    <h3>ESTADO</h3>
+                    <p id="enabled">--</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>🎮 Controle Rápido</h2>
+            <div style="text-align: center; margin: 25px 0;">
+                <button class="toggle-btn" id="toggleBtn" onclick="toggleBot()">
+                    LIGAR BOT
+                </button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>⚙️ Configurações</h2>
+            <form id="configForm" onsubmit="saveConfig(event)">
+                <div class="form-group">
+                    <label>🔹 Servidor de Origem (ID)</label>
+                    <input type="text" id="source_server_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>📥 Canal de Origem (ID)</label>
+                    <input type="text" id="source_channel_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔸 Servidor de Destino (ID)</label>
+                    <input type="text" id="target_server_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>📤 Canal de Destino (ID)</label>
+                    <input type="text" id="target_channel_id" required>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="startup_message_enabled">
+                    <label for="startup_message_enabled" style="margin: 0;">Enviar mensagem de startup ao iniciar</label>
+                </div>
+                
+                <button type="submit" class="btn">💾 Salvar Configurações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Atualizar status a cada 5 segundos
+        setInterval(updateStatus, 5000);
+        updateStatus();
+        loadConfig();
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                const toggleBtn = document.getElementById('toggleBtn');
+                
+                if (data.online) {
+                    statusDot.className = 'status-indicator status-online';
+                    statusText.textContent = 'Bot Online';
+                    document.getElementById('ping').textContent = data.latency + 'ms';
+                    document.getElementById('servers').textContent = data.servers;
+                } else {
+                    statusDot.className = 'status-indicator status-offline';
+                    statusText.textContent = 'Bot Offline';
+                    document.getElementById('ping').textContent = '--ms';
+                    document.getElementById('servers').textContent = '--';
+                }
+                
+                if (data.enabled) {
+                    toggleBtn.textContent = '🟢 BOT LIGADO';
+                    toggleBtn.className = 'toggle-btn';
+                    document.getElementById('enabled').textContent = 'ATIVO';
+                } else {
+                    toggleBtn.textContent = '🔴 BOT DESLIGADO';
+                    toggleBtn.className = 'toggle-btn disabled';
+                    document.getElementById('enabled').textContent = 'INATIVO';
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                
+                document.getElementById('source_server_id').value = config.source_server_id;
+                document.getElementById('source_channel_id').value = config.source_channel_id;
+                document.getElementById('target_server_id').value = config.target_server_id;
+                document.getElementById('target_channel_id').value = config.target_channel_id;
+                document.getElementById('startup_message_enabled').checked = config.startup_message_enabled;
+            } catch (error) {
+                console.error('Erro ao carregar configuração:', error);
+            }
+        }
+
+        async function toggleBot() {
+            try {
+                const response = await fetch('/api/toggle', { method: 'POST' });
+                const data = await response.json();
+                
+                showAlert(data.message, 'success');
+                updateStatus();
+            } catch (error) {
+                showAlert('Erro ao alternar bot', 'error');
+            }
+        }
+
+        async function saveConfig(event) {
+            event.preventDefault();
+            
+            const config = {
+                source_server_id: document.getElementById('source_server_id').value,
+                source_channel_id: document.getElementById('source_channel_id').value,
+                target_server_id: document.getElementById('target_server_id').value,
+                target_channel_id: document.getElementById('target_channel_id').value,
+                startup_message_enabled: document.getElementById('startup_message_enabled').checked
+            };
+            
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                const data = await response.json();
+                showAlert(data.message, 'success');
+            } catch (error) {
+                showAlert('Erro ao salvar configuração', 'error');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+  </html>
